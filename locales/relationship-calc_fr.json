@@ -1,0 +1,14 @@
+{
+  "living": "Vivant(e)",
+  "mother": "Mère",
+  "father": "Père",
+  "son": "Fils",
+  "daughter": "Fille",
+  "parent": "Père ou mère",
+  "wife": "Femme",
+  "husband": "Mari",
+  "me": "Moi",
+  "relationship": "Lien de parenté",
+  "close": "Fermer",
+  "error_retrieving_relationship": "Une erreur est survenue lors du rétablissement du lien de parenté."
+}

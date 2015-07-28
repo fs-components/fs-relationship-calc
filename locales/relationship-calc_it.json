@@ -1,0 +1,14 @@
+{
+  "living": "Vivente",
+  "mother": "Madre",
+  "father": "Padre",
+  "son": "Figlio",
+  "daughter": "Figlia",
+  "parent": "Genitore",
+  "wife": "Moglie",
+  "husband": "Marito",
+  "me": "Io",
+  "relationship": "Rapporto di parentela",
+  "close": "Chiudi",
+  "error_retrieving_relationship": "Si è verificato un errore nel recupero rapporto di parentela"
+}

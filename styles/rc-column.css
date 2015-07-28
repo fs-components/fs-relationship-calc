@@ -1,0 +1,30 @@
+.column {
+  width: 180px;
+  float: left;
+}
+.column-3 /deep/ .person.non-descendant.last .line {
+  height: 21px;
+  border-bottom: 2px solid #ccc !important;
+  position: absolute;
+  width: 80%;
+  left: -50%;
+  margin-left: 18px;
+  border-right: none;
+  top: -10px;
+}
+
+.column-1 /deep/ .person.top {
+  width: 100%;
+  border: none;
+  margin: 0 0 32px;
+  padding: 0;
+}
+
+.column-3 /deep/ .person.top .line{
+  height: 1px;
+  width: 140px;
+  border-bottom: 2px solid #ccc;
+  top: 10px;
+  left: 61%;
+  border-right: 0;
+}

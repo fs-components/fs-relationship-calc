@@ -1,0 +1,14 @@
+{
+  "living": "生者",
+  "mother": "母親",
+  "father": "父親",
+  "son": "息子",
+  "daughter": "娘",
+  "parent": "親",
+  "wife": "妻",
+  "husband": "夫",
+  "me": "わたし",
+  "relationship": "関係",
+  "close": "閉じる",
+  "error_retrieving_relationship": "関係の取得中にエラーが起こりました"
+}

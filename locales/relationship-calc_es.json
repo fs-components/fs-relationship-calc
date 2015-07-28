@@ -1,0 +1,14 @@
+{
+  "living": "Vivo",
+  "mother": "Madre",
+  "father": "Padre",
+  "son": "Hijo",
+  "daughter": "Hija",
+  "parent": "Padre",
+  "wife": "Esposa",
+  "husband": "Esposo",
+  "me": "Yo",
+  "relationship": "Parentesco",
+  "close": "Cerrar",
+  "error_retrieving_relationship": "Se produjo un error al recuperar la relación"
+}

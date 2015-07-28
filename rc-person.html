@@ -1,0 +1,85 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../link-tracker-behavior/link-tracker-behavior.html">
+
+<dom-module id='rc-person'>
+  <link rel="import" type="css" href="./styles/rc-person.css">
+  <style>
+  </style>
+  <template>
+    <div id="person" class="person">
+      <div hidden$="{{isBlank}}">
+        <div class="line"></div>
+        <div id="avatar" class="relationship-avatar icon"></div>
+        <div hidden$="{{!person.living}}">
+          <p class="name">
+            {{person.name}}
+          </p>
+        </div>
+        <div hidden$="{{person.living}}">
+          <p class="name">
+            <a id="person-link" event-name="Memories: Photos: RelationshipCalc Person Click" target="_blank" href$="{{_personLink(person)}}">{{person.name}}</a>
+          </p>
+        </div>
+        <p class="relationship-title">{{person.relationshipTitle}}</p>
+      </div>
+    </div>
+  </template>
+</dom-module>
+<script>
+  function broadRelType(rel) {
+    if (!rel) return 'other';
+    rel = rel.toLowerCase();
+    switch (rel) {
+      case 'son':
+      case 'daughter':
+      case 'child':
+        return 'child';
+      case 'mother':
+      case 'father':
+      case 'parent':
+        return 'parent';
+      case 'husband':
+      case 'wife':
+      case 'spouse':
+        return 'spouse';
+    }
+    return 'other';
+  }
+  Polymer({
+    is: 'rc-person',
+    behaviors: [ LinkTracker ],
+    listeners: {
+      "person-link.click": "fireTrackingEvent"
+    },
+    properties: {
+      isBlank: {
+        type: Boolean,
+        value: false
+      },
+      person: {
+        type: Object,
+        observer: '_parsePerson'
+      }
+    },
+    _personLink: function(person) {
+      return '/tree/#view=ancestor&person='+ person.id + '&section=memories';
+    },
+    ready: function() {
+      if (this.isBlank || !this.person) return;
+      
+    },
+    _isTop: function(person) {
+      return person.top === 'true';
+    },
+    _parsePerson: function() {
+      var _this = this;
+      if (this.person.top) this.toggleClass('top', true, this.$.person);
+      if (this.person.last) this.toggleClass('last', true, this.$.person);
+      if (broadRelType(this.person.relationshipTitle) !== 'child') this.toggleClass('non-descendant', true, this.$.person);
+      if (this.person.relationshipTitle.toLowerCase() === 'me') this.toggleClass('base', true, this.$.person);
+      setTimeout(function() {
+        _this.toggleClass('fs-icon-' + _this.person.gender.toLowerCase(), true, _this.$$('#avatar'));
+      }, 0);
+    }
+  });
+</script>

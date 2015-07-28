@@ -1,0 +1,14 @@
+{
+  "living": "Живущий",
+  "mother": "Мать",
+  "father": "Отец",
+  "son": "Сын",
+  "daughter": "Дочь",
+  "parent": "Родитель",
+  "wife": "Жена",
+  "husband": "Муж",
+  "me": "Я",
+  "relationship": "Родственная связь",
+  "close": "Закрыть",
+  "error_retrieving_relationship": "Возникла ошибка при получении родственной связи"
+}

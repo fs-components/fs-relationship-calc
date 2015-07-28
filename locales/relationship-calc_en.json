@@ -1,0 +1,14 @@
+{
+  "living": "Living",
+  "mother": "Mother",
+  "father": "Father",
+  "son": "Son",
+  "daughter": "Daughter",
+  "parent": "Parent",
+  "wife": "Wife",
+  "husband": "Husband",
+  "me": "Me",
+  "relationship": "Relationship",
+  "error_retrieving_relationship": "There was an error retrieving relationship",
+  "close":"Close"
+}

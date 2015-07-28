@@ -1,0 +1,14 @@
+{
+  "living": "存",
+  "mother": "母親",
+  "father": "父親",
+  "son": "兒子",
+  "daughter": "女兒",
+  "parent": "父母",
+  "wife": "妻子",
+  "husband": "丈夫",
+  "me": "我",
+  "relationship": "關係",
+  "close": "關閉",
+  "error_retrieving_relationship": "擷取關係時發生錯誤"
+}

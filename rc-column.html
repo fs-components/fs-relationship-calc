@@ -1,0 +1,29 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<dom-module id='rc-column'>
+  <style>
+    :host {
+      display:block;
+    }
+  </style>
+  <link rel="import" type="css" href="./styles/rc-column.css">
+  <template>
+    <div id="column" class="column">
+      <content></content>
+    </div>
+  </template>
+</dom-module>
+<script>
+  Polymer({
+    is: 'rc-column',
+    properties: {
+      number: {
+        type: Number,
+        observer: '_addColumnNumber'
+      }
+    },
+    _addColumnNumber: function() {
+      if (this.number) this.toggleClass(('column-' + this.number) , true, this.$.column);
+    },
+  });
+</script>

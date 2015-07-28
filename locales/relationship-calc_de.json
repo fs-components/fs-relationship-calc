@@ -1,0 +1,14 @@
+{
+  "living": "lebende Person",
+  "mother": "Mutter",
+  "father": "Vater",
+  "son": "Sohn",
+  "daughter": "Tochter",
+  "parent": "Vater oder Mutter",
+  "wife": "Ehefrau",
+  "husband": "Ehemann",
+  "me": "Ich",
+  "relationship": "Verwandtschaftsverhältnis",
+  "close": "Schließen",
+  "error_retrieving_relationship": "Beim Abrufen des Verwandtschaftsverhältnisses ist ein Fehler aufgetreten."
+}
