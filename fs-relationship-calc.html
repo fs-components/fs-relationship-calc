@@ -23,18 +23,10 @@
           </div>
         </template>
         <div id="container" class="wrap">
-          <iron-ajax
-            auto
-            id="personId"
-            url="https://familysearch.org/platform/users/current" 
-            method="GET"
-            headers="{{_headers}}"
-            last-response="{{data}}"
-            on-error="_handleError"></iron-ajax>
-            <template is="dom-if" if="{{config.findPersonId}}">
+            <template is="dom-if" if="{{personId}}">
               <iron-ajax 
                 auto
-                url="{{_soiURL(config.findPersonId)}}" 
+                url="{{_soiURL(personId)}}" 
                 method="GET"
                 headers='{{_headers}}'
                 on-response="_parseRelationships"
@@ -90,9 +82,9 @@
     is: 'fs-relationship-calc',
     behaviors: [ componenti18n('fs-relationship-calc') ],
     properties: {
-      config: {
-        type: Object,
-        value: {}
+      personId: {
+        type: String,
+        value: null
       },
       _headers: {
         type: Object,
@@ -111,10 +103,10 @@
       var _this = this;
       document.addEventListener('show-relationship-calc', function(event) {
         _this._error = null;
-        _this.config = event.detail;
-        if (!_this.config.findPersonId || !_this.config.sessionId) {
+        if (!event.detail.personId) {
           return console.warn('Relationship Calculator: Invalid configuration');
         }
+        _this.personId = event.detail.personId;
         _this._dataLoaded = false;
         _this.toggleClass('hide', false);
         var existing = [].slice.call(Polymer.dom(_this.$.wrap).childNodes);
@@ -142,7 +134,7 @@
       }
     },
     _soiURL: function(id) {
-      return '/scopeservice/soi/related/' + this.config.findPersonId;
+      return '/scopeservice/soi/related/' + this.personId;
     },
     _handleError: function() {
       this._dataLoaded = true;
