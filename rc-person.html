@@ -1,5 +1,4 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../link-tracker-behavior/link-tracker-behavior.html">
 
 <dom-module id='rc-person'>
   <link rel="import" type="css" href="./styles/rc-person.css">
@@ -47,10 +46,6 @@
   }
   Polymer({
     is: 'rc-person',
-    behaviors: [ LinkTracker ],
-    listeners: {
-      "person-link.click": "fireTrackingEvent"
-    },
     properties: {
       isBlank: {
         type: Boolean,
