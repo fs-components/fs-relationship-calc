@@ -84,7 +84,8 @@
     properties: {
       personId: {
         type: String,
-        value: null
+        value: null,
+        observer: '_clear'
       },
       _headers: {
         type: Object,
@@ -99,21 +100,23 @@
         observer: '_setWidth'
       },
     },
+    _clear: function() {
+      var _this = this;
+      _this._error = null;
+      _this._dataLoaded = false;
+      var existing = [].slice.call(Polymer.dom(_this.$.wrap).childNodes);
+      existing.forEach(function(el) {
+        Polymer.dom(_this.$.wrap).removeChild(el);
+      });
+    },
     ready: function() {
       var _this = this;
       document.addEventListener('show-relationship-calc', function(event) {
-        _this._error = null;
         if (!event.detail.personId) {
           return console.warn('Relationship Calculator: Invalid configuration');
         }
-        _this.personId = event.detail.personId;
-        _this._dataLoaded = false;
         _this.toggleClass('hide', false);
-        var existing = [].slice.call(Polymer.dom(_this.$.wrap).childNodes);
-
-        existing.forEach(function(el) {
-          Polymer.dom(_this.$.wrap).removeChild(el);
-        });
+        this._clear();
       });
     },
     toggleShowHide: function() {
