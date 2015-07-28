@@ -115,8 +115,8 @@
         if (!event.detail.personId) {
           return console.warn('Relationship Calculator: Invalid configuration');
         }
+        _this.personId = event.detail.personId;
         _this.toggleClass('hide', false);
-        this._clear();
       });
     },
     toggleShowHide: function() {
