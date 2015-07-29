@@ -45,10 +45,12 @@
   float:right;
   color:#CCCCCC;
   font-size:25px;
+  text-decoration: none;
 }
 
 .close:hover {
   text-decoration: none;
+  color:#A3A3A3;
 }
 
 .footer {

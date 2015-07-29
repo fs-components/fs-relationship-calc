@@ -45,181 +45,182 @@
   </template>
 </dom-module>
 <script>
-  var Person = function(json, i18n) {
-    this.id = json.personId;
-    this.name = (json.name) ? json.name : i18n.living;
-    this.top = (json.top !== undefined) ? json.top : false;
-    this.gender = json.gender;
-    this.relationshipToPrevious = json.relationshipToPrevious === 'SELF' ? 'me' : json.relationshipToPrevious.toLowerCase();
-    this.relationshipTitle = (i18n[this.relationshipToPrevious]) ? i18n[this.relationshipToPrevious].toUpperCase() : this.relationshipToPrevious.toUpperCase();
-    this.last = (json.last !== undefined) ? json.last : false;
-    this.living = (json.name === '');
-    // console.log(this.relationshipTitle);
-  };
+  (function(window, document) {
+    var Person = function(json, i18n) {
+      this.id = json.personId;
+      this.name = (json.name) ? json.name : i18n.living;
+      this.top = (json.top !== undefined) ? json.top : false;
+      this.gender = json.gender;
+      this.relationshipToPrevious = json.relationshipToPrevious === 'SELF' ? 'me' : json.relationshipToPrevious.toLowerCase();
+      this.relationshipTitle = (i18n[this.relationshipToPrevious]) ? i18n[this.relationshipToPrevious].toUpperCase() : this.relationshipToPrevious.toUpperCase();
+      this.last = (json.last !== undefined) ? json.last : false;
+      this.living = (json.name === '');
+      // console.log(this.relationshipTitle);
+    };
 
-  function broadRelType(rel) {
-    if (!rel) return 'other';
-    rel = rel.toLowerCase();
-    switch (rel) {
-      case 'son':
-      case 'daughter':
-      case 'child':
-        return 'child';
-      case 'mother':
-      case 'father':
-      case 'parent':
-        return 'parent';
-      case 'husband':
-      case 'wife':
-      case 'spouse':
-        return 'spouse';
+    function broadRelType(rel) {
+      if (!rel) return 'other';
+      rel = rel.toLowerCase();
+      switch (rel) {
+        case 'son':
+        case 'daughter':
+        case 'child':
+          return 'child';
+        case 'mother':
+        case 'father':
+        case 'parent':
+          return 'parent';
+        case 'husband':
+        case 'wife':
+        case 'spouse':
+          return 'spouse';
+      }
+      return 'other';
     }
-    return 'other';
-  }
 
-  Polymer({
-    null: null,
-    is: 'fs-relationship-calc',
-    behaviors: [ componenti18n('fs-relationship-calc') ],
-    properties: {
-      personId: {
-        type: String,
-        value: null,
-        observer: '_clear'
+    Polymer({
+      is: 'fs-relationship-calc',
+      behaviors: [ componenti18n('fs-relationship-calc') ],
+      properties: {
+        personId: {
+          type: String,
+          value: null,
+          observer: '_clear'
+        },
+        _headers: {
+          type: Object,
+          value: {
+            Authorization: 'Bearer ' + FS.Cookie.getCookie('fssessionid'),
+            Accept: 'application/json'
+          }
+        },
+        _currentColumn: {
+          type: Number,
+          value:0,
+          observer: '_setWidth'
+        },
       },
-      _headers: {
-        type: Object,
-        value: {
-          Authorization: 'Bearer ' + FS.Cookie.getCookie('fssessionid'),
-          Accept: 'application/json'
-        }
+      _clear: function() {
+        var _this = this;
+        _this._error = null;
+        _this._dataLoaded = false;
+        var existing = [].slice.call(Polymer.dom(_this.$.wrap).childNodes);
+        existing.forEach(function(el) {
+          Polymer.dom(_this.$.wrap).removeChild(el);
+        });
       },
-      _currentColumn: {
-        type: Number,
-        value:0,
-        observer: '_setWidth'
+      created: function() {
+        var _this = this;
+        document.addEventListener('show-relationship-calc', function(event) {
+          if (!event.detail.personId) {
+            return console.warn('Relationship Calculator: Invalid configuration');
+          }
+          _this.personId = event.detail.personId;
+          _this.toggleClass('hide', false);
+        });
       },
-    },
-    _clear: function() {
-      var _this = this;
-      _this._error = null;
-      _this._dataLoaded = false;
-      var existing = [].slice.call(Polymer.dom(_this.$.wrap).childNodes);
-      existing.forEach(function(el) {
-        Polymer.dom(_this.$.wrap).removeChild(el);
-      });
-    },
-    ready: function() {
-      var _this = this;
-      document.addEventListener('show-relationship-calc', function(event) {
-        if (!event.detail.personId) {
-          return console.warn('Relationship Calculator: Invalid configuration');
-        }
-        _this.personId = event.detail.personId;
-        _this.toggleClass('hide', false);
-      });
-    },
-    toggleShowHide: function() {
-      this.classList.toggle('hide');
-    },
-    _preventDefault: function(event) {
-      return event.stopPropagation();
-    },
-    _setWidth: function() {
-      this.toggleClass('two-column', false, this.$.container);
-      this.toggleClass('three-column', false, this.$.container);
+      toggleShowHide: function() {
+        this.classList.toggle('hide');
+      },
+      _preventDefault: function(event) {
+        return event.stopPropagation();
+      },
+      _setWidth: function() {
+        this.toggleClass('two-column', false, this.$.container);
+        this.toggleClass('three-column', false, this.$.container);
 
-      switch(this._currentColumn) {
-        case 2:
-          return this.toggleClass('two-column', true, this.$.container);
-        case 3:
-          return this.toggleClass('three-column', true, this.$.container);
-      }
-    },
-    _soiURL: function(id) {
-      return '/scopeservice/soi/related/' + this.personId;
-    },
-    _handleError: function() {
-      this._dataLoaded = true;
-      this._error = true;
-    },
-    _parseRelationships: function(event, request) {
-      var _this = this;
-      this._dataLoaded = true;
-      var data = request.response;
-      data.relationship[data.relationship.length - 1].last = true;
-      var topIndex = 0;
-      this._currentColumn = 0;
-      this._buildRelationshipCalc(data.relationship.map(function(soiPerson, index) {
-        var person = new Person(soiPerson, _this.i18n || {});
-        if (person.top) topIndex = index;
-        return person;
-      }), topIndex);
-    },
-    _addColumn: function() {
-      var column = document.createElement('rc-column');
-      column.number = this._currentColumn + 1;
-      Polymer.dom(this.$.wrap).appendChild(column);
-      this._currentColumn++;
-      return column;
-    },
-    _createNode: function(person, column) {
-      // console.log('Creating Person:', person);
-      var element = document.createElement('rc-person');
-      element.person = person;
-      if (column) {
-        var node = Polymer.dom(column)
-        node.insertBefore(element, node.firstChild);
-      }
-      return element;
-    },
-    _addBlankNodes: function(count, column) {
-      for (var i = 0; i < count; i++) {
-        var el = document.createElement('nc-person');
-        el.isBlank = true;
-        Polymer.dom(column).appendChild(el);
-      }
-    },
-    _buildRelationshipCalc: function(persons, topIndex) {
-      var columns = [];
-      columns.push(this._addColumn());
-      var topShouldBeInColumn = true;
-      if (typeof persons[topIndex+1] !== 'undefined') {
-        if (broadRelType(persons[topIndex + 1].relationshipToPrevious) === 'child') {
-          topShouldBeInColumn = false;
+        switch(this._currentColumn) {
+          case 2:
+            return this.toggleClass('two-column', true, this.$.container);
+          case 3:
+            return this.toggleClass('three-column', true, this.$.container);
         }
-      }
-      
-      var blankCount = 0;
-      for (var i = 0, limit = persons.length; i < limit; i++) {
-        if (i === topIndex) continue;
-        
-        if (i === topIndex + 1) { 
-          // add the second column
-          columns.push(this._addColumn());
-        } else if (i > topIndex) {
-          if (broadRelType(persons[i].relationshipToPrevious.toLowerCase()) === 'spouse') {
-            columns.push(this._addColumn());
-            this._addBlankNodes(blankCount, columns[columns.length-1]);
-          } else {
-            blankCount++;
+      },
+      _soiURL: function(id) {
+        return '/scopeservice/soi/related/' + this.personId;
+      },
+      _handleError: function() {
+        this._dataLoaded = true;
+        this._error = true;
+      },
+      _parseRelationships: function(event, request) {
+        var _this = this;
+        this._dataLoaded = true;
+        var data = request.response;
+        data.relationship[data.relationship.length - 1].last = true;
+        var topIndex = 0;
+        this._currentColumn = 0;
+        this._buildRelationshipCalc(data.relationship.map(function(soiPerson, index) {
+          var person = new Person(soiPerson, _this.i18n || {});
+          if (person.top) topIndex = index;
+          return person;
+        }), topIndex);
+      },
+      _addColumn: function() {
+        var column = document.createElement('rc-column');
+        column.number = this._currentColumn + 1;
+        Polymer.dom(this.$.wrap).appendChild(column);
+        this._currentColumn++;
+        return column;
+      },
+      _createNode: function(person, column) {
+        // console.log('Creating Person:', person);
+        var element = document.createElement('rc-person');
+        element.person = person;
+        if (column) {
+          var node = Polymer.dom(column)
+          node.insertBefore(element, node.firstChild);
+        }
+        return element;
+      },
+      _addBlankNodes: function(count, column) {
+        for (var i = 0; i < count; i++) {
+          var el = document.createElement('nc-person');
+          el.isBlank = true;
+          Polymer.dom(column).appendChild(el);
+        }
+      },
+      _buildRelationshipCalc: function(persons, topIndex) {
+        var columns = [];
+        columns.push(this._addColumn());
+        var topShouldBeInColumn = true;
+        if (typeof persons[topIndex+1] !== 'undefined') {
+          if (broadRelType(persons[topIndex + 1].relationshipToPrevious) === 'child') {
+            topShouldBeInColumn = false;
           }
         }
+        
+        var blankCount = 0;
+        for (var i = 0, limit = persons.length; i < limit; i++) {
+          if (i === topIndex) continue;
+          
+          if (i === topIndex + 1) { 
+            // add the second column
+            columns.push(this._addColumn());
+          } else if (i > topIndex) {
+            if (broadRelType(persons[i].relationshipToPrevious.toLowerCase()) === 'spouse') {
+              columns.push(this._addColumn());
+              this._addBlankNodes(blankCount, columns[columns.length-1]);
+            } else {
+              blankCount++;
+            }
+          }
 
-        var node = this._createNode(persons[i]);
-        if (i < topIndex) {
-          Polymer.dom(columns[this._currentColumn - 1]).insertBefore(node, Polymer.dom(columns[this._currentColumn - 1]).firstChild);
+          var node = this._createNode(persons[i]);
+          if (i < topIndex) {
+            Polymer.dom(columns[this._currentColumn - 1]).insertBefore(node, Polymer.dom(columns[this._currentColumn - 1]).firstChild);
+          } else {
+            Polymer.dom(columns[this._currentColumn - 1]).appendChild(node);
+          }
+        }
+        if (topShouldBeInColumn) {
+          // if top person is supposed to be in the first column, then put it there
+          this._createNode(persons[topIndex], columns[0]);
         } else {
-          Polymer.dom(columns[this._currentColumn - 1]).appendChild(node);
+          // otherwise prepend top person node to wrapper element (outside columns)
+          Polymer.dom(this.$.wrap).insertBefore(this._createNode(persons[topIndex]), Polymer.dom(this.$.wrap).firstChild);
         }
       }
-      if (topShouldBeInColumn) {
-        // if top person is supposed to be in the first column, then put it there
-        this._createNode(persons[topIndex], columns[0]);
-      } else {
-        // otherwise prepend top person node to wrapper element (outside columns)
-        Polymer.dom(this.$.wrap).insertBefore(this._createNode(persons[topIndex]), Polymer.dom(this.$.wrap).firstChild);
-      }
-    }
-  });
+    });
+  })(window, document);
 </script>
